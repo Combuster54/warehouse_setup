@@ -140,63 +140,70 @@ var app = new Vue({
 
         requestBehaviorSrv(){
 
-            let emptyClient = new ROSLIB.Service({
-                ros : this.ros,
-                name : '/patrol_behavior_server',
-                serviceType : 'std_srvs/Empty'
+            let setBoolClient = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/patrol_behavior_server',
+                serviceType: 'std_srvs/SetBool'
             });
 
-            let emptyRequest = new ROSLIB.ServiceRequest({});
+            // Crear una solicitud de servicio con un valor booleano
+            let setBoolRequest = new ROSLIB.ServiceRequest({
+                data: true
+            });
 
-            emptyClient.callService(emptyRequest, function(result) {
+            setBoolClient.callService(setBoolRequest, function(result) {
                 console.log('Service call on '
-                + emptyClient.name
-                + ' completed.');
+                    + setBoolClient.name
+                    + ' completed with result: '
+                    + result.success);
             });
 
+            console.log('Se ha enviado la solicitud a Shelf Position Server');
 
         },
         requestApproachShelfSrv(){
 
-            
-            let emptyClient = new ROSLIB.Service({
-                ros : this.ros,
-                name : '/approach_shelf_server',
-                serviceType : 'std_srvs/Empty'
+            let setBoolClient = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/approach_shelf_server',
+                serviceType: 'std_srvs/SetBool'
             });
 
-            let emptyRequest = new ROSLIB.ServiceRequest({});
+            // Crear una solicitud de servicio con un valor booleano
+            let setBoolRequest = new ROSLIB.ServiceRequest({
+                data: true
+            });
 
-            emptyClient.callService(emptyRequest, function(result) {
+            setBoolClient.callService(setBoolRequest, function(result) {
                 console.log('Service call on '
-                + emptyClient.name
-                + ' completed.');
+                    + setBoolClient.name
+                    + ' completed with result: '
+                    + result.success);
             });
 
-
-            console.log('Se ha enviado la solicitud');
+            console.log('Se ha enviado la solicitud a Shelf Position Server');
 
         },
-        requestShelfPositionSrv(){
-                        
-            let emptyClient = new ROSLIB.Service({
-                ros : this.ros,
-                name : '/shelf_position_server',
-                serviceType : 'std_srvs/Empty'
+        requestShelfPositionSrv() {
+            let setBoolClient = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/shelf_position_server',
+                serviceType: 'std_srvs/SetBool'
             });
 
-            let emptyRequest = new ROSLIB.ServiceRequest({});
+            // Crear una solicitud de servicio con un valor booleano
+            let setBoolRequest = new ROSLIB.ServiceRequest({
+                data: true
+            });
 
-            emptyClient.callService(emptyRequest, function(result) {
+            setBoolClient.callService(setBoolRequest, function(result) {
                 console.log('Service call on '
-                + emptyClient.name
-                + ' completed.');
+                    + setBoolClient.name
+                    + ' completed with result: '
+                    + result.success);
             });
 
-
-
-            console.log('Se ha enviado la solicitud');
-
+            console.log('Se ha enviado la solicitud a Shelf Position Server');
         },
         disconnect: function() {
             this.ros.close()

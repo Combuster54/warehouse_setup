@@ -9,7 +9,7 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 # ----- #
 
-from std_srvs.srv import Empty
+from std_srvs.srv import Empty, SetBool
 from geometry_msgs.msg import Transform
 # from attach_shelf.srv import GoToLoading
 from tf2_ros import TransformListener, Buffer
@@ -126,7 +126,7 @@ class GenericServer(Node):
     """
 
     def __init__(self):
-        super().__init__('server_pub_frame')
+        super().__init__('generic_server_node')
 
         #Flag to see if the process has succeed
         self.isDone = False
@@ -134,7 +134,7 @@ class GenericServer(Node):
         # Initialize FramePublisher Class
         self.shelf_position_node_ = ShelfPositionServer()
 
-        self.srv = self.create_service(Empty, 'shelf_position_server', self.service_callback)
+        self.srv = self.create_service(SetBool, 'shelf_position_server', self.service_callback)
         self.get_logger().info('Approach frame server is READY!')
 
     def service_callback(self, request, response):
@@ -143,7 +143,11 @@ class GenericServer(Node):
         self.shelf_position_node_.unload_shelf()
         if self.shelf_position_node_.unload_shelf_flag:
             self.get_logger().debug('[Shelf Position Server] SUCCESS!')
-            return response
+            response.success = True
+        else:
+            response.success = False
+
+        return response
 
 def main():
 

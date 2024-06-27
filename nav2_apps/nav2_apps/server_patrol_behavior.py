@@ -24,7 +24,7 @@ Poner un manejo de error en destroy node, porque ya se destruyo el nodo previame
 from rclpy.node import Node
 from nav2_apps.navigation2_class import Navigation
 from nav2_apps.frame_listener_class import FrameListener
-from std_srvs.srv import Empty
+from std_srvs.srv import Empty, SetBool
 from geometry_msgs.msg import Twist
 
 from rcl_interfaces.srv import SetParameters
@@ -127,7 +127,7 @@ class PatrolBehaviorServer(Node):
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 10)
 
         # Create Server
-        self.srv = self.create_service(Empty, 'patrol_behavior_server', self.service_callback)
+        self.srv = self.create_service(SetBool, 'patrol_behavior_server', self.service_callback)
         self.get_logger().info('patrol_behavior_server_node ready')
 
     def start(self):
@@ -157,7 +157,7 @@ class PatrolBehaviorServer(Node):
     def stop_nav(self):
         self.get_logger().debug('[stop_nav]')
         if self.listener_node_.frame_found_ :
-            self.get_logger().info(f" [stop_nav] Stop Navigation") 
+            self.get_logger().info(f" [stop_nav_timer] Stop Navigation") 
             self.navigation_node_.state_nav = 5
             self.navigation_node_.frame_found_ = True
             msg = Twist()
@@ -181,12 +181,16 @@ class PatrolBehaviorServer(Node):
                 self.get_logger().info('[SUCCEED]')
                 self.isDone = True
                 self.end_process()
+                response.success = True
+
             if self.navigation_node_.state_nav == 6:
                 self.get_logger().info('[FAILED]')
                 self.isDone = True
                 self.end_process()
+                response.success = False
+
             time.sleep(1)
-        self.get_logger().info('[Outside while]')
+        self.get_logger().debug('[Outside while]')
         self.stop_nav_timer.cancel()
         return response
 

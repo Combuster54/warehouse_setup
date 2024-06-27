@@ -29,7 +29,7 @@ from tf2_ros import TransformListener, Buffer, StaticTransformBroadcaster, Trans
 from tf2_ros import LookupException, ConnectivityException, ExtrapolationException
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 # ----- #
-from std_srvs.srv import Empty
+from std_srvs.srv import Empty, SetBool
 
 '''
 Este codigo es la segunda parte del proceso automatico, una vez se haya encontrado
@@ -89,7 +89,7 @@ class costMapClients(Node):
             Parameter(name='obstacle_layer.scan.raytrace_min_range', value=2.5).to_parameter_msg(),
             Parameter(name='obstacle_layer.scan.obstacle_max_range', value=4.5).to_parameter_msg(),
             Parameter(name='obstacle_layer.scan.obstacle_min_range', value=2.5).to_parameter_msg(),
-            Parameter(name='combination_method', value = 0).to_parameter_msg(),
+            Parameter(name='combination_method', value = 1).to_parameter_msg(),
             Parameter(name='footprint', value = "[ [0.45, 0.45], [0.45, -0.45], [-0.45, -0.45], [-0.45, 0.45] ]" ).to_parameter_msg(),
             Parameter(name='width', value =  1).to_parameter_msg(),
             Parameter(name='height', value = 1).to_parameter_msg(),
@@ -264,7 +264,7 @@ class ApproachServer(Node):
         self.inside_shelf_flag = False
         self.align_with_shelf = False
         # Create Server
-        self.srv = self.create_service(Empty, 'approach_shelf_server', self.service_callback)
+        self.srv = self.create_service(SetBool, 'approach_shelf_server', self.service_callback)
         self.get_logger().info(f'approach_server_node ready')
 
     def get_transform(self, parent_frame: str , child_frame: str)->  Tuple[PoseStamped, Any]:
@@ -300,11 +300,11 @@ class ApproachServer(Node):
 
                 self.distance = math.sqrt(self.x_error**2 + self.y_error**2)
  
-                self.get_logger().debug(f'[followFrame] distance {self.distance}')
+                self.get_logger().info(f'[followFrame] distance {self.distance}')
 
                 self.error_yaw = math.pi / 2 - math.atan2(self.x_error,  self.y_error) 
                 abs_error_yaw = abs(self.error_yaw)
-                self.get_logger().debug(f'[followFrame] error_yaw {self.error_yaw}')
+                self.get_logger().info(f'[followFrame] error_yaw {abs_error_yaw}')
 
                 #Approach with focus in point
                 if abs_error_yaw > math.pi / 90:
@@ -342,9 +342,8 @@ class ApproachServer(Node):
         velocity = Twist()
 
         while abs(self.yaw) > 0.01:
-            self.get_logger().debug(f'[while abs(self.yaw) > 0.01]')
 
-            self.get_logger().debug(f'[while abs(self.yaw) > 0.01]')
+            self.get_logger().info(f'[align_to_shelf] yaw_error = {self.yaw}')
             # Actualizar variables
             self.updatePose(parent_frame, child_frame)
 
@@ -441,6 +440,8 @@ class ApproachServer(Node):
             #Comprobar si se alcanzo el frame
             if self.first_point_flag == False:
                 self.get_logger().debug('approach_point failed')
+                response.success = False
+                response.message = "approach_point failed"
                 return response
             
             self.get_logger().debug('approach_point reached')
@@ -448,6 +449,8 @@ class ApproachServer(Node):
             self.stop()
 
             if self.align_with_shelf == False:
+                response.success = False
+                response.message = "align_with_shelf failed"
                 self.get_logger().debug('align_with_shelf failed')
                 return response
             self.get_logger().debug('align_with_shelf reached')
@@ -460,13 +463,19 @@ class ApproachServer(Node):
 
             self.costmap_cli_node_.send_request()
             
-            if self.detect_shelf_point_flag and self.first_point_flag :
+            if self.detect_shelf_point_flag and self.first_point_flag and self.align_with_shelf :
 
                 self.get_logger().info('aprroach shelf_srv complete each flag')
                 self.isDone = True
+                response.success = True
+                response.message = "Aprroach shelf_srv complete each flag"
             else:
                 self.get_logger().info('aprroach shelf_srv error, one flag is false')
-            
+                self.get_logger().info(f'detect_shelf_point_flag = {self.detect_shelf_point_flag}')
+                self.get_logger().info(f'first_point_flag = {self.first_point_flag}')
+                self.get_logger().info(f'align_with_shelf = {self.align_with_shelf}')
+                response.success = False
+
             return response
 
         else:
