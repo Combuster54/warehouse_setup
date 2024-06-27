@@ -1,13 +1,10 @@
 # Automated Shelf Repositioning in Warehouse Enviroments
 
 
-### The project is developed with the purpose of repositioning the shelf in the correct location. This is achieved through the use of multiple ROS2 nodes running in parallel, as well as utilizing the Nav2 framework for the Humble version.
-
-### There are 3 servers
-
-### - Patrol Behavior Server: Follow a set of waypoints to find the shelf
-### - Approach Server: Get underneath the shelf that has already been located
-### - Shelf Position Server: Reallocate the shelf to the correct position
+The project is developed with the purpose of repositioning the shelf in the correct location. This is achieved through the use of multiple ROS2 nodes running in parallel, as well as utilizing the Nav2 framework for the Humble version.
+- Patrol Behavior Server: Follow a set of waypoints to find the shelf
+- Approach Server: Get underneath the shelf that has already been located
+- Shelf Position Server: Reallocate the shelf to the correct position
 
 ## Generate setup (ROS2 Humble)
 ```
