@@ -1,12 +1,11 @@
 
 services:
 
-  tortoisebot-ros2-gazebo:
-    image: combuster54/tortoisebot:galactic-gazebo
-    container_name: tortoisebot-ros2-gazebo
-    build: 
-      context: .
-      dockerfile: tortoisebot-ros2-gazebo
+  warehouse-nav2:
+    image: combuster54/warehouse_project:nav2_real
+    # build: 
+    #   context: . 
+    #   dockerfile: warehouse_nav2
     environment:
       - DISPLAY
     volumes:
@@ -15,19 +14,20 @@ services:
       - rosnet
     restart: "always" 
 
-  tortoisebot-ros2-slam:
-    image: combuster54/tortoisebot:slam-gazebo
-    container_name: tortoisebot-ros2-slam
-    build: 
-      context: .
-      dockerfile: tortoisebot-ros2-slam
+
+  warehouse-webpage:
+    image: combuster54/warehouse_project:webpage
+    # container_name: webpage
+    # build: 
+    #   context: . 
+    #   dockerfile: warehouse_webpage
     environment:
       - DISPLAY
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
     networks:
       - rosnet
-    restart: "always"
+    ports:
+      - "7000:7000"
+      - "9090:9090"
 
 networks:
   rosnet:

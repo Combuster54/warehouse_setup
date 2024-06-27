@@ -1,0 +1,40 @@
+# Start from ROS base image
+FROM ros:humble-ros-base
+# Set the working directory
+WORKDIR /
+
+# Make a catkin workspace
+WORKDIR /
+RUN mkdir -p /webpage_ws/src
+WORKDIR /webpage_ws/src
+
+# Change the default shell to Bash
+SHELL [ "/bin/bash" , "-c" ]
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \ 
+    ros-$ROS_DISTRO-rosbridge-server && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get install python3 && \
+    ln -s /usr/bin/python3 /usr/bin/python
+
+# Create a volume for ROS packages
+COPY ./webpage /webpage_ws/src/webpage
+
+# Build the Catkin workspace
+RUN source /opt/ros/humble/setup.bash \
+    && cd /webpage_ws \
+    && colcon build
+
+# Ensure the workspace is sourced
+RUN echo "source /opt/ros/noetic/setup.bash && source /catkin_ws/devel/setup.bash" >> ~/.bashrc
+
+COPY entrypoint.sh /entrypoint.sh
+
+# Asegurarse de que el script tenga permisos de ejecución
+RUN chmod +x /entrypoint.sh
+
+# Configurar el script como el punto de entrada
+ENTRYPOINT ["/entrypoint.sh"]

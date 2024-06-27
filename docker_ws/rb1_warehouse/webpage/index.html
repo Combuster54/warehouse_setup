@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- ROS stuff -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/eventemitter2/lib/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="https://s3.eu-west-1.amazonaws.com/rosject.io/js/roslib.min.js"></script>
+    <!-- 3D visualization -->
+    <!-- <script src="http://static.robotwebtools.org/threejs/current/three.min.js"></script> -->
+
+    <!-- <script src="http://static.robotwebtools.org/threejs/current/ColladaLoader.min.js"></script> -->
+
+    <!-- <script src="http://static.robotwebtools.org/ColladaAnimationCompress/current/ColladaLoader2.min.js"></script> -->
+
+    <!-- <script src="http://static.robotwebtools.org/threejs/current/STLLoader.min.js"></script> -->
+
+    <!-- <script src="http://static.robotwebtools.org/ros3djs/current/ros3d.min.js"></script> -->
+
+    <!-- Vuejs -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/easeljs/lib/easeljs.min.js">
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ros2d/build/ros2d.min.js">
+    </script>
+    <!-- Import jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Vuejs -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/easeljs/lib/easeljs.min.js">
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ros2d/build/ros2d.min.js">
+    </script>
+
+    <style type="text/css">
+        #dragstartzone {
+            position: relative;
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            border: 1px solid #333;
+            border-radius: 50%;
+            z-index: 10;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #dragCircle {
+            position: absolute;
+            z-index: 9;
+            border: 1px solid transparent;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 30%);
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+
+        }
+
+        #dragCircle:hover {
+            background-color: lightcoral;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+
+
+        .map-container {
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            width: 65%;
+            margin-left: 1%;
+
+        }
+
+        .log-container {
+            border: 2px solid black;
+            width: 30%;
+            height: 300px;
+        }
+
+
+        .container-large {
+            width: 200px;
+        }
+
+        .container-tall {
+            height: 200px;
+            width: 50px;
+        }
+
+        .joystick-container {
+
+            border: 2px solid black;
+            height: 200px;
+            width: 50%;
+        }
+
+        /* _button-group.scss:5 */
+        .btn-primary {
+            margin-left: 5px;
+            margin-bottom: 2px;
+        }
+
+        .buttons-container {
+            border: 2px solid black;
+            height: 200px;
+            width: 40%;
+            margin-right: 35px;
+            margin-left: 20px;
+        }
+
+        .card {
+            border: 2px solid black;
+            width: 30%;
+            height: 100%;
+        }
+
+        /* .card-header {
+            border: 2px solid black;
+
+
+        } */
+        .btn-toolbar {
+            /* border: 2px solid black; */
+            width: 100%;
+            height: 100%;
+
+
+        }
+
+        .card-header {
+
+            font-size: 24px;
+            text-align: center;
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="app" class="general-container">
+
+        <div class="row">
+            <div class="log-container">
+
+                <div class="text-center">
+                    <div class="card-body">
+                        <h3>Connection status</h3>
+                        <p class="text-danger" v-if="!connected">Not connected!</p>
+                        <p class="text-success" v-if="connected">Connected!</p>
+                        <label>ROSBridge address</label>
+                        <br>
+                        <input type="text" v-model="rosbridge_address" />
+                        <br><br>
+                        <button :disabled="loading" class="btn btn-danger" @click="disconnect"
+                            v-if="connected">Disconnect!</button>
+                        <button :disabled="loading" class="btn btn-success" @click="connect" v-else>Connect!</button>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="map-container">
+
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-toolbar" role="group" aria-label="First group">
+                        <div class="card">
+                            <div class="card-header">
+                                Patrol Server
+                            </div>
+                            <div class="card-body">
+                                <button class="btn-primary" @click="requestBehaviorSrv"
+                                    :disabled="!connected || !serviceIdleState">Send
+                                    Request</button>
+                            </div>
+                            <div class="card-footer text-muted">
+                                <p v-if="serviceIdleState">{{ serviceResponse2 }}</p>
+                                <p v-else>server is running...</p>
+                            </div>
+
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                Approach Server
+                            </div>
+                            <div class="card-body">
+                                <button class="btn-primary" @click="requestApproachShelfSrv"
+                                    :disabled="!connected || !serviceIdleState">Send
+                                    Request</button>
+                            </div>
+                            <div class="card-footer text-muted">
+                                <p v-if="serviceIdleState">{{ serviceResponse2 }}</p>
+                                <p v-else>server is running...</p>
+                            </div>
+
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                Shelf Position Server
+                            </div>
+                            <div class="card-body">
+                                <button class="btn-primary" @click="requestShelfPositionSrv"
+                                    :disabled="!connected || !serviceIdleState">Send
+                                    Request</button>
+                            </div>
+                            <div class="card-footer text-muted">
+                                <p v-if="serviceIdleState">{{ serviceResponse2 }}</p>
+                                <p v-else>server is running...</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="buttons-container">
+
+                <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                    <button type="button" class="btn-primary" @click="elevator_up" :disabled="!connected">Elevator
+                        Up</button>
+
+                    <button type="button" class="btn-primary" @click="elevator_down" :disabled="!connected">Elevator
+                        Down</button>
+
+                    <button type="button" class="btn-primary">Go to Initial Pose</button>
+
+                </div>
+            </div>
+
+            <div class="joystick-container">
+                <div class="text-center">
+
+                    <p>Vertical: {{ joystick.vertical.toFixed(3) }}</p>
+                    <p>Horizontal: {{ joystick.horizontal.toFixed(3) }}</p>
+                    <div id="dragstartzone" @mousedown="startDrag" @mousemove="doDrag">
+                    </div>
+                    <div id="dragCircle" :style="dragCircleStyle"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        // We could have loaded main.js simply with:
+        //  <script type="text/javascript" src="main.js">
+        //
+        // BUT we were having caching-related problems.
+        // Loading main.js with a Date.now() in the URL we avoid using cache
+
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'main.js?v=9.' + Date.now();
+        document.head.appendChild(script);
+    </script>
+</body>
+
+</html>

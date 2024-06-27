@@ -14,10 +14,10 @@ RUN apt-get update && apt-get install -y \
    ros-humble-navigation2 \
    ros-humble-nav2-bringup
 
-RUN git clone --branch warehouse_real_test --single-branch https://github.com/rigbetellabs/tortoisebot.git /catkin_ws/src/tortoisebot
+RUN git clone https://github.com/Combuster54/warehouse_setup ros2_ws/src/warehouse_nav2
 
 # Build the Catkin workspace
-RUN source /opt/ros/galactic/setup.bash \
+RUN source /opt/ros/humble/setup.bash \
     && cd /ros2_ws \
     && colcon build
 
@@ -25,4 +25,4 @@ RUN source /opt/ros/galactic/setup.bash \
 RUN echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
 
 # Set the entry point to start the ROS launch file
-ENTRYPOINT ["/bin/bash", "-c", "source /ros2_ws/install/setup.bash && ros2 launch path_planner_server real_navigation.launch.py"]
+ENTRYPOINT ["/bin/bash", "-c", "source /ros2_ws/install/setup.bash && ros2 launch path_planner_server nrviz_navigation.launch.py"]
