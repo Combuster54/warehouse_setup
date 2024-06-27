@@ -117,8 +117,11 @@ class PatrolBehaviorServer(Node):
         log_level = self.log_levels.get(log_level.lower(), rclpy.logging.LoggingSeverity.INFO)
         
         self.get_logger().set_level(log_level)
-        self.navigation_node_.get_logger().set_level(rclpy.logging.LoggingSeverity.DEBUG)
-        self.listener_node_.get_logger().set_level(rclpy.logging.LoggingSeverity.INFO)
+        self.navigation_node_.get_logger().set_level(log_level)
+        self.listener_node_.get_logger().set_level(log_level)
+
+        # self.navigation_node_.get_logger().set_level(rclpy.logging.LoggingSeverity.DEBUG)
+        # self.listener_node_.get_logger().set_level(rclpy.logging.LoggingSeverity.INFO)
 
         self.stop_nav_timer = None
 

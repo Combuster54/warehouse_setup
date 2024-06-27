@@ -234,11 +234,8 @@ class ApproachServer(Node):
         self.frame_publisher_node_.get_logger().set_level(log_level)
         self.frame_listener_node_.get_logger().set_level(log_level)
 
+        # self.get_logger().set_level(rclpy.logging.LoggingSeverity.DEBUG)
 
-
-
-        self.frame_listener_node_.get_logger().set_level(rclpy.logging.LoggingSeverity.INFO)
-        self.get_logger().set_level(rclpy.logging.LoggingSeverity.DEBUG)
         # Create Publisher
         self.cmd_vel_pub_ = self.create_publisher(Twist, 'cmd_vel', 10)
         # self.cmd_vel_pub_ = self.create_publisher(Twist, '/diffbot_base_controller/cmd_vel_unstamped', 10)
