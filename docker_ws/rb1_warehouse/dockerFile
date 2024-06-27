@@ -1,0 +1,28 @@
+# Start from ROS base image
+FROM ros:humble-ros-base
+
+# Make a catkin workspace
+WORKDIR /
+RUN mkdir -p /ros2_ws/src
+WORKDIR /ros2_ws/src
+
+SHELL [ "/bin/bash" , "-c" ]
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+   ros-humble-navigation2 \
+   ros-humble-nav2-bringup
+
+RUN git clone --branch warehouse_real_test --single-branch https://github.com/rigbetellabs/tortoisebot.git /catkin_ws/src/tortoisebot
+
+# Build the Catkin workspace
+RUN source /opt/ros/galactic/setup.bash \
+    && cd /ros2_ws \
+    && colcon build
+
+# Ensure the workspace is sourced
+RUN echo "source /ros2_ws/install/setup.bash" >> ~/.bashrc
+
+# Set the entry point to start the ROS launch file
+ENTRYPOINT ["/bin/bash", "-c", "source /ros2_ws/install/setup.bash && ros2 launch path_planner_server real_navigation.launch.py"]

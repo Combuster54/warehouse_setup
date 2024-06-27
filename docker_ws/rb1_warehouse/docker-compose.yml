@@ -1,0 +1,34 @@
+
+services:
+
+  tortoisebot-ros2-gazebo:
+    image: combuster54/tortoisebot:galactic-gazebo
+    container_name: tortoisebot-ros2-gazebo
+    build: 
+      context: .
+      dockerfile: tortoisebot-ros2-gazebo
+    environment:
+      - DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    networks:
+      - rosnet
+    restart: "always" 
+
+  tortoisebot-ros2-slam:
+    image: combuster54/tortoisebot:slam-gazebo
+    container_name: tortoisebot-ros2-slam
+    build: 
+      context: .
+      dockerfile: tortoisebot-ros2-slam
+    environment:
+      - DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    networks:
+      - rosnet
+    restart: "always"
+
+networks:
+  rosnet:
+    driver: bridge
