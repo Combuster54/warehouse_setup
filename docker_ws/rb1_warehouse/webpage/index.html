@@ -187,13 +187,13 @@
                                 Patrol Server
                             </div>
                             <div class="card-body">
-                                <button class="btn-primary" @click="requestBehaviorSrv"
-                                    :disabled="!connected || !PatrolBehaviorState">Send
+                                <button class="btn-primary" @click="requestBehaviorSrv" :disabled="!connected">Send
                                     Request</button>
                             </div>
                             <div class="card-footer text-muted">
-                                <p v-if="ShelfPositionState">{{ PatrolBehaviorState }}</p>
-                                <p v-else="Result">{{ PatrolBehaviorResponse }}</p>
+                                <p>state: {{ PatrolBehaviorLog }}</p>
+                                <p>result: {{ PatrolBehaviorResponse }}</p>
+
                             </div>
 
                         </div>
@@ -202,13 +202,12 @@
                                 Approach Server
                             </div>
                             <div class="card-body">
-                                <button class="btn-primary" @click="requestApproachShelfSrv"
-                                    :disabled="!connected || !ApproachState">Send
+                                <button class="btn-primary" @click="requestApproachShelfSrv" :disabled="!connected">Send
                                     Request</button>
                             </div>
                             <div class="card-footer text-muted">
-                                <p v-if="ShelfPositionState">{{ ApproachState }}</p>
-                                <p v-else="Result">{{ ApproachResponse }}</p>
+                                <p>state: {{ ApproachLog }}</p>
+                                <p>result: {{ ApproachResponse }}</p>
                             </div>
 
                         </div>
@@ -217,13 +216,12 @@
                                 Shelf Position Server
                             </div>
                             <div class="card-body">
-                                <button class="btn-primary" @click="requestShelfPositionSrv"
-                                    :disabled="!connected || !ShelfPositionState">Send
+                                <button class="btn-primary" @click="requestShelfPositionSrv" :disabled="!connected">Send
                                     Request</button>
                             </div>
                             <div class="card-footer text-muted">
-                                <p v-if="ShelfPositionState">{{ ShelfPositionState }}</p>
-                                <p v-else="Result">{{ ShelfPositionResponse }}</p>
+                                <p>state: {{ ShelfPositionLog }}</p>
+                                <p>result: {{ ShelfPositionResponse }}</p>
                             </div>
 
                         </div>

@@ -14,17 +14,17 @@ sudo apt install ros-humble-rosbridge-server
 ##  Start RVIZ2 && nav2 config
 
 cd ~/ros2_ws/src/warehouse_setup
-./nav2_setup
+./nav2_setup.sh
 
 
 ## Start webpage && rosbridge
 
 cd ~/ros2_ws/src/warehouse_setup
-./webpage_setup
+./webpage_setup.sh
 
 
 ## Start webpage && rosbridge
 
 cd ~/ros2_ws/src/warehouse_setup
-./server_setup
+./server_setup.sh
 

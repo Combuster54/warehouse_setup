@@ -60,16 +60,19 @@ var app = new Vue({
         // idk
 
         ShelfPositionState: true,
-        ShelfPositionResponse: false,
+        ShelfPositionResponse: '',
         ShelfPositionMsg: '',
+        ShelfPositionLog: 'Inactive',
 
-       ApproachState: true,
-       ApproachResponse: false,
-       ApproachMsg: '',
+        ApproachState: true,
+        ApproachResponse: '',
+        ApproachMsg: '',
+        ApproachLog: 'Inactive',
 
         PatrolBehaviorState: true,
-        PatrolBehaviorResponse: false,
+        PatrolBehaviorResponse: '',
         PatrolBehaviorMsg: '',
+        PatrolBehaviorLog: 'Inactive',
 
         // Topics
         up_topic: 'elevator_up',
@@ -91,6 +94,10 @@ var app = new Vue({
                 this.a = true
 
                 this.pubInterval = setInterval(this.VelocityPub, 100);
+                this.PatrolBehaviorLog = 'Active'
+                this.ApproachLog = 'Active'
+                this.ShelfPositionLog = 'Active'
+
 
             })
             this.ros.on('error', (error) => {
@@ -100,6 +107,10 @@ var app = new Vue({
                 this.logs.unshift((new Date()).toTimeString() + ' - Disconnected!')
                 this.connected = false
                 this.loading = false
+                this.PatrolBehaviorLog = 'Inactive'
+                this.ApproachLog = 'Inactive'
+                this.ShelfPositionLog = 'Inactive'
+
                 clearInterval(this.pubInterval)
 
             })
@@ -161,20 +172,33 @@ var app = new Vue({
             let setBoolRequest = new ROSLIB.ServiceRequest({
                 data: true
             });
+            this.PatrolBehaviorResponse = "Running...";
 
-            setBoolClient.callService(setBoolRequest, function(result) {
+            let self = this; // Guardar el contexto de `this`
+
+            setBoolClient.callService(setBoolRequest, (result) => {
                 console.log('Service call on '
                     + setBoolClient.name
                     + ' completed with result: '
                     + result.success);
 
 
-                this.PatrolBehaviorResponse = result.success;
-                this.PatrolBehaviorMsg = result.message;
-                this.PatrolBehaviorState = false;
+                // this.PatrolBehaviorResponse = result.success;
+                // this.PatrolBehaviorMsg = result.message;
+                // this.PatrolBehaviorState = false;
+
+                self.PatrolBehaviorResponse = result.success;
+                self.PatrolBehaviorMsg = result.message;
+                self.PatrolBehaviorState = false;
+
 
             });
 
+            // Limpiar el mensaje después de 3 segundos
+            setTimeout(() => {
+            this.PatrolBehaviorResponse = '';
+            }, 6000);
+            
             console.log('Se ha enviado la solicitud a Shelf Position Server');
 
         },
@@ -194,6 +218,11 @@ var app = new Vue({
                 data: true
             });
 
+            this.ApproachResponse = "Running...";
+
+            let self = this; // Guardar el contexto de `this`
+
+
             setBoolClient.callService(setBoolRequest, function(result) {
                 console.log('Service call on '
                     + setBoolClient.name
@@ -201,12 +230,18 @@ var app = new Vue({
                     + result.success);
 
 
-                this.ApproachResponse = result.success;
-                this.ApproachMsg = result.message;
-                this.ApproachState = false;
+                self.ApproachResponse = result.success;
+                self.ApproachMsg = result.message;
+                self.ApproachState = false;
+
 
 
             });
+
+            // Limpiar el mensaje después de 3 segundos
+            setTimeout(() => {
+            this.ApproachResponse = '';
+            }, 6000);
 
             console.log('Se ha enviado la solicitud a Shelf Position Server');
 
@@ -227,16 +262,26 @@ var app = new Vue({
                 data: true
             });
 
+            this.ShelfPositionResponse = "Running...";
+
+            let self = this; // Guardar el contexto de `this`
+
+
             setBoolClient.callService(setBoolRequest, function(result) {
                 console.log('Service call on '
                     + setBoolClient.name
                     + ' completed with result: '
                     + result.success);
 
-                this.ShelfPositionResponse = result.success;
-                this.ShelfPositionMsg = result.message;
-                this.ShelfPositionState = false;
+                self.ShelfPositionResponse = result.success;
+                self.ShelfPositionMsg = result.message;
+                self.ShelfPositionState = false;
             });
+
+            // Limpiar el mensaje después de 3 segundos
+            setTimeout(() => {
+            this.ShelfPositionResponse = '';
+            }, 6000);
 
             console.log('Se ha enviado la solicitud a Shelf Position Server');
         },
