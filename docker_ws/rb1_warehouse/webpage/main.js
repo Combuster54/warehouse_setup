@@ -58,11 +58,18 @@ var app = new Vue({
         },
     
         // idk
-        serviceIdleState: true,
-        serviceResponse1: '',
-        serviceResponse2: '',
-        serviceResponse3: '',
-        serviceResponse4: '',    
+
+        ShelfPositionState: true,
+        ShelfPositionResponse: false,
+        ShelfPositionMsg: '',
+
+       ApproachState: true,
+       ApproachResponse: false,
+       ApproachMsg: '',
+
+        PatrolBehaviorState: true,
+        PatrolBehaviorResponse: false,
+        PatrolBehaviorMsg: '',
 
         // Topics
         up_topic: 'elevator_up',
@@ -140,6 +147,10 @@ var app = new Vue({
 
         requestBehaviorSrv(){
 
+
+            this.PatrolBehaviorState = false;
+
+
             let setBoolClient = new ROSLIB.Service({
                 ros: this.ros,
                 name: '/patrol_behavior_server',
@@ -156,12 +167,21 @@ var app = new Vue({
                     + setBoolClient.name
                     + ' completed with result: '
                     + result.success);
+
+
+                this.PatrolBehaviorResponse = result.success;
+                this.PatrolBehaviorMsg = result.message;
+                this.PatrolBehaviorState = false;
+
             });
 
             console.log('Se ha enviado la solicitud a Shelf Position Server');
 
         },
         requestApproachShelfSrv(){
+
+            this.ApproachState = false;
+
 
             let setBoolClient = new ROSLIB.Service({
                 ros: this.ros,
@@ -179,12 +199,23 @@ var app = new Vue({
                     + setBoolClient.name
                     + ' completed with result: '
                     + result.success);
+
+
+                this.ApproachResponse = result.success;
+                this.ApproachMsg = result.message;
+                this.ApproachState = false;
+
+
             });
 
             console.log('Se ha enviado la solicitud a Shelf Position Server');
 
         },
         requestShelfPositionSrv() {
+
+
+            this.ShelfPositionState = false;
+
             let setBoolClient = new ROSLIB.Service({
                 ros: this.ros,
                 name: '/shelf_position_server',
@@ -201,6 +232,10 @@ var app = new Vue({
                     + setBoolClient.name
                     + ' completed with result: '
                     + result.success);
+
+                this.ShelfPositionResponse = result.success;
+                this.ShelfPositionMsg = result.message;
+                this.ShelfPositionState = false;
             });
 
             console.log('Se ha enviado la solicitud a Shelf Position Server');

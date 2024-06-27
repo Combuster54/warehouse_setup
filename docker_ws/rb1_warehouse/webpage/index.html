@@ -78,7 +78,7 @@
 
 
         .map-container {
-            border: 2px solid black;
+            /* border: 2px solid black; */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -118,7 +118,7 @@
         }
 
         .buttons-container {
-            border: 2px solid black;
+            /* border: 2px solid black; */
             height: 200px;
             width: 40%;
             margin-right: 35px;
@@ -126,7 +126,7 @@
         }
 
         .card {
-            border: 2px solid black;
+            /* border: 2px solid black; */
             width: 30%;
             height: 100%;
         }
@@ -188,12 +188,12 @@
                             </div>
                             <div class="card-body">
                                 <button class="btn-primary" @click="requestBehaviorSrv"
-                                    :disabled="!connected || !serviceIdleState">Send
+                                    :disabled="!connected || !PatrolBehaviorState">Send
                                     Request</button>
                             </div>
                             <div class="card-footer text-muted">
-                                <p v-if="serviceIdleState">{{ serviceResponse2 }}</p>
-                                <p v-else>server is running...</p>
+                                <p v-if="ShelfPositionState">{{ PatrolBehaviorState }}</p>
+                                <p v-else="Result">{{ PatrolBehaviorResponse }}</p>
                             </div>
 
                         </div>
@@ -203,12 +203,12 @@
                             </div>
                             <div class="card-body">
                                 <button class="btn-primary" @click="requestApproachShelfSrv"
-                                    :disabled="!connected || !serviceIdleState">Send
+                                    :disabled="!connected || !ApproachState">Send
                                     Request</button>
                             </div>
                             <div class="card-footer text-muted">
-                                <p v-if="serviceIdleState">{{ serviceResponse2 }}</p>
-                                <p v-else>server is running...</p>
+                                <p v-if="ShelfPositionState">{{ ApproachState }}</p>
+                                <p v-else="Result">{{ ApproachResponse }}</p>
                             </div>
 
                         </div>
@@ -218,12 +218,12 @@
                             </div>
                             <div class="card-body">
                                 <button class="btn-primary" @click="requestShelfPositionSrv"
-                                    :disabled="!connected || !serviceIdleState">Send
+                                    :disabled="!connected || !ShelfPositionState">Send
                                     Request</button>
                             </div>
                             <div class="card-footer text-muted">
-                                <p v-if="serviceIdleState">{{ serviceResponse2 }}</p>
-                                <p v-else>server is running...</p>
+                                <p v-if="ShelfPositionState">{{ ShelfPositionState }}</p>
+                                <p v-else="Result">{{ ShelfPositionResponse }}</p>
                             </div>
 
                         </div>
