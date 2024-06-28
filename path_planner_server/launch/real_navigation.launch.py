@@ -4,6 +4,8 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration, PythonExpression, FindExecutable
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
+from ament_index_python.packages import get_package_share_directory
+from launch.substitutions import PathJoinSubstitution
 
 def generate_launch_description():
 
@@ -40,6 +42,16 @@ def generate_launch_description():
     # filters_yaml = os.path.join(get_package_share_directory(path_planner_server_pkg), 'config', 'filters.yaml')
 
     return LaunchDescription([    
+
+        Node(
+            package="laser_filters",
+            executable="scan_to_scan_filter_chain",
+            parameters=[
+                PathJoinSubstitution([
+                    get_package_share_directory("laser_filters"),
+                    "examples", "shadow_filter_example.yaml",
+                ])],
+        ),
 
         #~~~~~~~~~~~~~~~~~~provide map~~~~~~~~~~~~~~~~~~~~~~~~~~
         Node(
