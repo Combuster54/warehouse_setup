@@ -30,8 +30,8 @@ class MinimalClientAsync(Node):
             Parameter(name='obstacle_layer.scan.obstacle_min_range', value=2.5).to_parameter_msg(),
             Parameter(name='combination_method', value = 0).to_parameter_msg(),
             Parameter(name='footprint', value = "[ [0.45, 0.45], [0.45, -0.45], [-0.45, -0.45], [-0.45, 0.45] ]" ).to_parameter_msg(),
-            Parameter(name='width', value =  1).to_parameter_msg(),
-            Parameter(name='height', value = 1).to_parameter_msg(),
+            Parameter(name='width', value =  2).to_parameter_msg(),
+            Parameter(name='height', value = 2).to_parameter_msg(),
 
         ]
         

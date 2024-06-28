@@ -53,9 +53,9 @@ global_costmap:
         # combination_method: 0 # No domina el map static
 
         #fuente de observación
-        observation_sources: scan
+        observation_sources: scan_filtered
         scan:
-          topic: /scan
+          topic: /scan_filtered
           # Parámetro para cámaras 3d
           max_obstacle_height: 2.0
           # Si la fuente debe marcarse en el mapa de costes.

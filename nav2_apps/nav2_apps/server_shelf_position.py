@@ -41,6 +41,7 @@ This code performs the following operations with the RB-1 robot:
 ###### POSITIONS ######
 ####################
 request_init_position = 'init_position'
+request_second_position = 'second_position'
 request_approach_unload_position = 'approach_unload_position'
 request_unload_position = 'unload_position'
 ####################
@@ -95,6 +96,8 @@ class ShelfPositionServer(Node):
 
         self.unload_shelf_flag = False
         #Approach
+        self.navigation_node_.go_pose(request_second_position,'common_bt.xml') #which means go to this pose
+
         self.navigation_node_.go_pose(request_approach_unload_position,'common_bt.xml') #which means go to this pose
         #go to left pose
         self.navigation_node_.go_pose(request_unload_position,'common_bt.xml') #which means go to this pose

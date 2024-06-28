@@ -66,17 +66,17 @@ var app = new Vue({
 
 
 
-        ShelfPositionState: true,
+        ShelfPositionState: '',
         ShelfPositionResponse: '',
         ShelfPositionMsg: '',
         ShelfPositionLog: 'Inactive',
 
-        ApproachState: true,
+        ApproachState: '',
         ApproachResponse: '',
         ApproachMsg: '',
         ApproachLog: 'Inactive',
 
-        PatrolBehaviorState: true,
+        PatrolBehaviorState: '',
         PatrolBehaviorResponse: '',
         PatrolBehaviorMsg: '',
         PatrolBehaviorLog: 'Inactive',

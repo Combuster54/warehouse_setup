@@ -399,7 +399,7 @@ class ApproachServer(Node):
 
     def service_callback(self, request, response):
 
-        self.get_logger().debug('Server has been called!')
+        self.get_logger().debug('Approach Server has been called!')
 
         # Start timer
         self.frame_listener_node_.timer_on_ = True

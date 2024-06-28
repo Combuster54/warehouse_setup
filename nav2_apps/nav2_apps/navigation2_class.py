@@ -52,6 +52,7 @@ request_shipping_position = 'shipping_position'
 ###### Server Shelf Position ######
 ####################
 request_init_position = 'init_position'
+request_second_position = 'second_position'
 request_approach_unload_position = 'approach_unload_position'
 request_unload_position = 'unload_position'
 ####################
@@ -95,10 +96,13 @@ class Navigation(Node):
             "init_position" :   [0.031, -0.023, -0.000,
                                 -0.000, -0.000, -0.000, 1.000],
 
+           'second_position': [2.00, -0.351, 0.025,
+                                 0.000,  0.000,  -0.660, 0.752],
+
             'approach_unload_position': [4.326, -0.351, 0.025,
                                  0.000,  0.000,  -0.660, 0.752],
 
-            "unload_position": [4.486, -1.650, 0.025,
+            "unload_position": [4.410, -1.650, 0.025,
                                 -0.000, -0.000,  -0.747, 0.665],
         }
         
