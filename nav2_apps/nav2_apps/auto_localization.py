@@ -13,6 +13,8 @@ from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallb
 
 from threading import Thread
 from concurrent.futures import ThreadPoolExecutor
+from std_srvs.srv import Empty, SetBool
+
 
 
 class AmclSub(Node):
@@ -46,7 +48,6 @@ class AmclClient(Node):
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting again...')
         self.req = Empty.Request()
-        self.send_request()
 
     def send_request(self):
         self.future = self.cli.call_async(self.req)
@@ -82,15 +83,22 @@ class SelfLocalizeRB1(Node):
         self.move_square = False
         self.count_squared = 0.0
         self.wait_srv = True
-        self.timer_ = self.create_timer(0.5, self.start, callback_group=self.timer_cb_group)
+        self.timer_ =  None
 
         self.get_logger().info("Node initialized")
 
         time.sleep(3)
         self.service_available = True
-
+        self.localization_rb1 = False
+        self.isDone = False
         # self.executor_pool = ThreadPoolExecutor(max_workers=3)
 
+    def start_timer(self):
+        self.get_logger().info("Start Timer")
+
+        self.isDone = False
+        self.localization_rb1 = False
+        self.timer_ = self.create_timer(0.5, self.start, callback_group=self.timer_cb_group)
 
     def shutdownhook(self):
         # works better than the rclpy.is_shutdown()
@@ -105,12 +113,12 @@ class SelfLocalizeRB1(Node):
         msg.linear.z = 0.0
         msg.angular.x = 0.0
         msg.angular.y = 0.0
-        msg.angular.z = 0.30
+        msg.angular.z = 0.20
         self.publisher_.publish(msg)
 
     def publish_linear_velocity(self):
             msg = Twist()
-            msg.linear.x =  0.20
+            msg.linear.x =  0.10
             msg.linear.y = 0.0
             msg.linear.z = 0.0
             msg.angular.x = 0.0
@@ -165,18 +173,56 @@ class SelfLocalizeRB1(Node):
                 cov = self.calculate_covariance()
 
                 if cov > 0.65:
-                    self.get_logger().info("######## Total Covariance is greater than 0.65. Repeating the process...")
+                    # self.get_logger().info("######## Total Covariance is greater than 0.65. Repeating the process...")
                     self.amcl_client_node.send_request()
                     self.count_squared = 0.0
+                    self.localization_rb1 = False
+                    self.isDone = True
+                    self.timer_.cancel()
 
                 else:
-                    self.get_logger().info("######## Total Covariance is lower than 0.65. Robot correctly localized!")
-                    self.get_logger().info("######## Timer canceled")
+                    # self.get_logger().info("######## Total Covariance is lower than 0.65. Robot correctly localized!")
+                    self.localization_rb1 = True
+                    self.isDone = True
                     self.timer_.cancel()
 
         except Exception as e:
             self.get_logger().error(f"Error in start function: {e}")
 
+class GenericServer(Node):
+
+
+    def __init__(self):
+        super().__init__('auto_localization_server_node')
+
+        # Initialize FramePublisher Class
+        self.self_localize_node_ = SelfLocalizeRB1()
+
+        self.srv = self.create_service(SetBool, 'auto_localization_server', self.service_callback)
+        self.get_logger().info('auto_localization_server_node is READY!')
+
+    def service_callback(self, request, response):
+        
+        self.get_logger().debug('[auto_localization_server] Called!')
+        self.self_localize_node_.amcl_client_node.send_request()
+        self.self_localize_node_.start_timer()
+
+        while self.self_localize_node_.isDone == False:
+            self.get_logger().debug('[while inside]')
+
+
+
+        if(self.self_localize_node_.localization_rb1):
+            self.get_logger().info('[auto_localization_server] success')
+            response.success = True
+            response.message = "Total Covariance is lower than 0.65. Robot correctly localized"
+        else:
+            self.get_logger().info('[auto_localization_server] fail')
+            response.success = False
+            response.message = "Total Covariance is greater than 0.65. Repeating the process.."
+
+        return response
+    
 def spin_srv(executor):
     try:
         executor.spin()
@@ -186,17 +232,15 @@ def spin_srv(executor):
 def main(args=None):
     rclpy.init(args=args)
 
-
-    move_rb1_node_ = SelfLocalizeRB1()
+    generic_server_node = GenericServer()
+    move_rb1_node_ = generic_server_node.self_localize_node_
+    amcl_sub_node_ = generic_server_node.self_localize_node_.amcl_sub_node
+    amcl_client_node_ = generic_server_node.self_localize_node_.amcl_client_node
+ 
+    executor = MultiThreadedExecutor()
 
     executor = MultiThreadedExecutor()
-    amcl_sub_node_ = move_rb1_node_.amcl_sub_node
-    amcl_client_node_ = move_rb1_node_.amcl_client_node
-    # amcl_sub_executor = SingleThreadedExecutor()
-    # amcl_sub_thread = Thread(target=spin_srv, args=(amcl_sub_executor, ), daemon=True)
-    # amcl_sub_thread.start()
-
-    executor = MultiThreadedExecutor()
+    executor.add_node(generic_server_node)
     executor.add_node(move_rb1_node_)
     executor.add_node(amcl_sub_node_)
     executor.add_node(amcl_client_node_)

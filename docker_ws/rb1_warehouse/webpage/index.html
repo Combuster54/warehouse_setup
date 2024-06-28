@@ -75,8 +75,6 @@
             margin-bottom: 20px;
         }
 
-
-
         .map-container {
             /* border: 2px solid black; */
             display: flex;
@@ -129,6 +127,14 @@
             /* border: 2px solid black; */
             width: 30%;
             height: 100%;
+        }
+
+        .localization-card {
+            width: 70%;
+            height: 40%;
+            margin-left: 200px;
+            margin-top: -70px;
+
         }
 
         /* .card-header {
@@ -242,7 +248,29 @@
                     <button type="button" class="btn-primary" @click="elevator_down" :disabled="!connected">Elevator
                         Down</button>
 
-                    <button type="button" class="btn-primary">Go to Initial Pose</button>
+
+                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="btn-toolbar" role="group" aria-label="First group">
+                            <div class="localization-card">
+                                <div class="card-header">
+                                    Localization Server
+                                </div>
+                                <div class="card-body">
+                                    <button class="btn-primary" @click="requestAutoLocalizationSrv"
+                                        :disabled="!connected">Send
+                                        Request</button>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    <p>state: {{ AutoLocalizationLog }}</p>
+                                    <p>result: {{ AutoLocalizationResponse }}</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
             </div>

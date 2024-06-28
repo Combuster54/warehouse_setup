@@ -77,4 +77,9 @@ def generate_launch_description():
             parameters=[{'cart_frame_log_level_arg': LaunchConfiguration('cart_frame_log_level'),
                          'shelf_real_distance_arg': LaunchConfiguration('shelf_real_distance')}]
         ),
+        Node(
+            package='nav2_apps',
+            executable='auto_localization',
+            output='screen',
+        ),
     ])

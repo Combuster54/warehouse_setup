@@ -105,6 +105,9 @@ class ShelfPositionServer(Node):
         self.footprint_publisher_node_.publish_init_footprint()
         #backward movement
         self.navigation_node_.publish_velocity_backward()
+        self.navigation_node_.go_pose(request_init_position,'common_bt.xml') #which means go to this pose
+
+
         self.unload_shelf_flag = True
 
 

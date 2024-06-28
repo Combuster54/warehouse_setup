@@ -59,6 +59,13 @@ var app = new Vue({
     
         // idk
 
+        AutoLocalizationState: '',
+        AutoLocalizationResponse: '',
+        AutoLocalizationMsg: '',
+        AutoLocalizationLog: 'Inactive',
+
+
+
         ShelfPositionState: true,
         ShelfPositionResponse: '',
         ShelfPositionMsg: '',
@@ -97,6 +104,7 @@ var app = new Vue({
                 this.PatrolBehaviorLog = 'Active'
                 this.ApproachLog = 'Active'
                 this.ShelfPositionLog = 'Active'
+                this.AutoLocalizationLog =  'Active'
 
 
             })
@@ -110,6 +118,7 @@ var app = new Vue({
                 this.PatrolBehaviorLog = 'Inactive'
                 this.ApproachLog = 'Inactive'
                 this.ShelfPositionLog = 'Inactive'
+                this.AutoLocalizationLog =  'Inactive'
 
                 clearInterval(this.pubInterval)
 
@@ -181,11 +190,6 @@ var app = new Vue({
                     + setBoolClient.name
                     + ' completed with result: '
                     + result.success);
-
-
-                // this.PatrolBehaviorResponse = result.success;
-                // this.PatrolBehaviorMsg = result.message;
-                // this.PatrolBehaviorState = false;
 
                 self.PatrolBehaviorResponse = result.success;
                 self.PatrolBehaviorMsg = result.message;
@@ -278,6 +282,43 @@ var app = new Vue({
                 self.ShelfPositionState = false;
             });
 
+            // Limpiar el mensaje después de 3 segundos
+            setTimeout(() => {
+            this.ShelfPositionResponse = '';
+            }, 6000);
+
+            console.log('Se ha enviado la solicitud a Shelf Position Server');
+        },
+        requestAutoLocalizationSrv() {
+
+
+            this.AutoLocalizationState = false;
+
+            let setBoolClient = new ROSLIB.Service({
+                ros: this.ros,
+                name: '/auto_localization_server',
+                serviceType: 'std_srvs/SetBool'
+            });
+
+            // Crear una solicitud de servicio con un valor booleano
+            let setBoolRequest = new ROSLIB.ServiceRequest({
+                data: true
+            });
+
+            this.AutoLocalizationResponse = "Running...";
+
+            let self = this; // Guardar el contexto de `this`
+
+            setBoolClient.callService(setBoolRequest, function(result) {
+                console.log('Service call on '
+                    + setBoolClient.name
+                    + ' completed with result: '
+                    + result.success);
+
+                self.AutoLocalizationResponse = result.success;
+                self.AutoLocalizationMsg = result.message;
+                self.AutoLocalizationState = false;
+            });
             // Limpiar el mensaje después de 3 segundos
             setTimeout(() => {
             this.ShelfPositionResponse = '';
